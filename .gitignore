@@ -36,4 +36,5 @@ build/
 .rvmrc
 
 # idea
-.idea/*.*
+.idea/
+*.iml
