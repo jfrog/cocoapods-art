@@ -1,4 +1,4 @@
-require 'cocoapods_repo_art'
+require 'cocoapods_art'
 
 module Pod
   class Command
@@ -11,12 +11,14 @@ module Pod
       require 'pod/command/repo_art/list'
 
       self.abstract_command = true
-      self.version = CocoaPodsRepoArt::VERSION
+      self.version = CocoaPodsArt::VERSION
       self.description = 'Enables working with Artifactory as a Specs repo and as a repository for Pods.'\
-                          "\n v#{CocoaPodsRepoArt::VERSION}\n"
+                          "\n v#{CocoaPodsArt::VERSION}\n"
       self.summary = <<-SUMMARY
         Artifactory support for CocoaPods
       SUMMARY
+
+      self.default_subcommand = 'list'
 
     end
   end

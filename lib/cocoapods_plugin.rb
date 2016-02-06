@@ -2,8 +2,8 @@ require 'pod/command/repo_art'
 require 'art_source'
 require 'cocoapods-downloader'
 
-Pod::HooksManager.register('cocoapods-repo-art', :source_provider) do |context, options|
-    Pod::UI.message 'cocoapods-repo-art received source_provider hook'
+Pod::HooksManager.register('cocoapods-art', :source_provider) do |context, options|
+    Pod::UI.message 'cocoapods received source_provider hook'
     return unless (sources = options['sources'])
     sources.each do |source_name|
         source = create_source_from_name(source_name)

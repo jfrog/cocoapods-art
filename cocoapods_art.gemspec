@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'cocoapods_repo_art'
+require 'cocoapods_art'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'cocoapods-repo-art'
-  spec.version       = CocoaPodsRepoArt::VERSION
+  spec.name          = 'cocoapods-art'
+  spec.version       = CocoaPodsArt::VERSION
   spec.authors       = ['Dan Feldman']
   spec.email         = ['art-dev@jfrog.com']
   spec.description   = %q{Enables you to use Artifactory as your spec repo, as well as a repository for your pods}
