@@ -120,7 +120,7 @@ module Pod
           UI.puts 'Pushing index to Artifactory'
           url = UTIL.get_art_url(repo_root_dir)
           begin
-            curl! '-f', '-L', '-T', "#{podspec_json_path}", '-H', 'Content-Type:application/json', "#{url}/index/pushSpec/#{spec.name}/#{spec.version.to_s}"
+            curl! '-XPUT', '-n', '-f', '-L', '-H', '"Content-Type:application/json"', "#{url}/index/pushSpec/#{spec.name}/#{spec.version.to_s}", '-T', "#{podspec_json_path}"
           rescue => e
             raise Informative, "Error pushing spec to Artifactory: #{e.message}"
           end
