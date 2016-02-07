@@ -60,3 +60,31 @@ module Pod
         end
     end
 end
+
+# Ugly, ugly hack to override pod's default behavior which is force the master spec repo if
+# no sources defined - at this point the plugin sources are not yet fetched from the plugin
+# with the source provider hook thus empty Podfiles that only have the plugin declared will
+# force a master repo update.
+module Pod
+    class Installer
+        class Analyzer
+
+          alias_method :orig_sources, :sources
+
+          def sources
+            if podfile.sources.empty? && podfile.plugins.keys.include?('cocoapods-art')
+              sources = Array.new
+              plugin_config = podfile.plugins['cocoapods-art']
+              # all sources declared in the plugin clause
+              plugin_config['sources'].uniq.map do |name|
+                sources.push(create_source_from_name(name))
+              end
+              @sources = sources
+            else
+              orig_sources
+            end
+          end
+
+        end
+    end
+  end

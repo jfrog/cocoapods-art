@@ -44,6 +44,9 @@ module Pod
             # The downloader names every file it gets file.<ext>
             temp_file = "#{repo_dir_specs}/file.tgz"
             File.delete(temp_file) if File.exist?(temp_file)
+            # The default flattening the Downloader uses for tgz makes this screwy
+            redundant_specs_folder = "#{repo_dir_specs}/Specs"
+            Dir.delete(redundant_specs_folder) if empty_redundant_spec_dir_exist(redundant_specs_folder)
 
             begin
               artpodrc_path = create_artpodrc_file(repo_dir_root)
@@ -52,6 +55,11 @@ module Pod
                                   '- your Artifactory-backed Specs repo will not work correctly without it!'
             end
           end
+          UI.puts "Successfully added repo #{@name}".green
+        end
+
+        def empty_redundant_spec_dir_exist(redundant_specs_dir)
+          Dir.exist?(redundant_specs_dir) && Dir.glob(redundant_specs_dir + '/' + '*').empty?
         end
 
         # Creates the .artpodrc file which contains the repository's url in the root of the Spec repo
