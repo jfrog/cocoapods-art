@@ -146,7 +146,7 @@ module Pod
         def repo_specs_dir
           root_dir = config.repos_dir + @repo
           specs_dir = Pathname.new(File.join(root_dir, 'Specs'))
-          raise Informative, "'#{repo}' is not an Artifactory-backed Specs repo" unless UTIL.art_repo?(root_dir)
+          raise Informative, "'#{@repo}' is not an Artifactory-backed Specs repo" unless UTIL.art_repo?(root_dir)
           raise Informative, "Specs dir of repo `#{@repo}` not found in #{specs_dir}" unless File.exist?(specs_dir)
           specs_dir
         end
@@ -155,7 +155,7 @@ module Pod
         #
         def repo_root_dir
           root_dir = config.repos_dir + @repo
-          raise Informative, "'#{repo}' is not an Artifactory-backed Specs repo" unless UTIL.art_repo?(root_dir)
+          raise Informative, "'#{@repo}' is not an Artifactory-backed Specs repo" unless UTIL.art_repo?(root_dir)
           root_dir
         end
 
