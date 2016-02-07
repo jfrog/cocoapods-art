@@ -13,16 +13,12 @@ module Pod
         ]
 
         def initialize(argv)
-          @name = argv.shift_argument
           @cmd = Command::Repo::Remove.new(argv)
           super
         end
 
         def validate!
           super
-          unless @name
-            help! 'This command requires a repo name.'
-          end
           @cmd.validate!
         end
 

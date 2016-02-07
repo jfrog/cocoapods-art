@@ -2,5 +2,5 @@
 # The namespace of the CocoaPods Artifactory plugin.
 #
 module CocoaPodsArt
-  VERSION = '0.3'
+  VERSION = '0.9'
 end
