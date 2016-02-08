@@ -16,6 +16,7 @@ module Pod
 
         def initialize(argv)
           @name, @url = argv.shift_argument, argv.shift_argument
+          @silent = argv.flag?('silent', false)
           super
         end
 
@@ -31,7 +32,7 @@ module Pod
             config.repos_dir.mkpath
             repo_dir_root = "#{config.repos_dir}/#{@name}"
             raise Informative, "Path #{repo_dir_root} already exists - remove it first, "\
-            "or run 'pod repo-art update #{@name}' to update it" if File.exist?(repo_dir_root)
+            "or run 'pod repo-art update #{@name}' to update it" if File.exist?(repo_dir_root) && !@silent
 
             repo_dir_specs = "#{repo_dir_root}/Specs"
             begin
@@ -55,7 +56,7 @@ module Pod
                                   '- your Artifactory-backed Specs repo will not work correctly without it!'
             end
           end
-          UI.puts "Successfully added repo #{@name}".green
+          UI.puts "Successfully added repo #{@name}".green unless @silent
         end
 
         def empty_redundant_spec_dir_exist(redundant_specs_dir)

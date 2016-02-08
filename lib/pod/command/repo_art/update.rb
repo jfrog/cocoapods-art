@@ -52,17 +52,17 @@ module Pod
                   # TODO unless .lastupdated >= api/updateTime do
                   # TODO Until we support delta downloads, update is actually add if not currently up tp date
                   url = UTIL.get_art_url(source.repo)
-                  repo_dir_specs = "#{source.repo}/Specs"
+                  repo_update_tmp = "#{source.repo}_update_tmp"
                   begin
-                    downloader = Pod::Downloader::Http.new(source.repo, "#{url}/index/fetchIndex", :type => 'tgz')
-                    downloader.download
+                    system("mv", source.repo.to_s, repo_update_tmp)
+                    argv = CLAide::ARGV.new([source_name, url, '--silent'])
+                    Pod::Command::RepoArt::Add.new(argv).run
                   rescue => e
+                    FileUtils.remove_entry_secure(source.repo.to_s, :force => true)
+                    system("mv", repo_update_tmp, source.repo.to_s)
                     raise Informative, "Error getting the index from Artifactory at: '#{url}' : #{e.message}"
                   end
-                  # The downloader names every file it gets file.<ext>
-                  temp_file = "#{repo_dir_specs}/file.tgz"
-                  File.delete(temp_file) if File.exist?(temp_file)
-
+                  FileUtils.remove_entry_secure(repo_update_tmp, :force => true)
                   UI.puts "Successfully updated repo #{source.name}".green if show_output && !config.verbose?
                 rescue => e
                   UI.warn "Unable to update repo `#{source.name}`: #{e.message}"
