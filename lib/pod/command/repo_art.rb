@@ -12,7 +12,7 @@ module Pod
 
       self.abstract_command = true
       self.version = CocoaPodsArt::VERSION
-      self.description = 'Enables working with Artifactory as a Specs repo and as a repository for Pods.'\
+      self.description = 'Enables working with JFrog Artifactory as a Specs repo and as a repository for Pods.'\
                           "\n v#{CocoaPodsArt::VERSION}\n"
       self.summary = <<-SUMMARY
         Artifactory support for CocoaPods
