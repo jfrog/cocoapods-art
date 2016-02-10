@@ -7,12 +7,6 @@ Pod::HooksManager.register('cocoapods-art', :source_provider) do |context, optio
     return unless (sources = options['sources'])
     sources.each do |source_name|
         source = create_source_from_name(source_name)
-        if source
-			# no auto-updates for now
-            # update_source(source) unless Pod::Config.instance.skip_repo_update?
-        else
-          Pod::UI.warn "repo #{source_name} does not exist."
-        end
         context.add_source(source)
     end
 end
@@ -39,7 +33,7 @@ def create_source_from_name(source_name)
     elsif Dir.exist?("#{repo}")
         Pod::ArtSource.new(repo, '');
     else
-        nil
+     raise Pod::Informative.exception "repo #{source_name} does not exist."
     end
 end
 
