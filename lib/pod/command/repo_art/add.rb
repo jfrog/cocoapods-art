@@ -43,6 +43,7 @@ module Pod
               downloader = Pod::Downloader::Http.new(repo_dir_specs, "#{@url}/index/fetchIndex", :type => 'tgz')
               downloader.download
             rescue => e
+              FileUtils.remove_entry_secure(repo_dir_root, :force => true)
               raise Informative, "Error getting the index from Artifactory at: '#{@url}' : #{e.message}"
             end
 
