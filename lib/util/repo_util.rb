@@ -28,6 +28,19 @@ module Pod
         File.exist?("#{dir}/.artpodrc")
       end
 
+      # Cleans up all of the junk left over from using the Downloader
+      #
+      def self.cleanup_index_download(tmp_file_dir)
+        # The downloader names every file it gets file.<ext>
+        temp_file = "#{tmp_file_dir}/file.tgz"
+        File.delete(temp_file) if File.exist?(temp_file)
+      end
+
+      def self.del_redundant_spec_dir(redundant_specs_dir)
+        # The default flattening the Downloader uses for tgz makes this screwy
+        Dir.delete(redundant_specs_dir) if (Dir.exist?(redundant_specs_dir) && Dir.glob(redundant_specs_dir + '/' + '*').empty?)
+      end
+
     end
   end
 end
