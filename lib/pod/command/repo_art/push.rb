@@ -62,16 +62,19 @@ module Pod
             UI.puts " --> #{get_message(output_path, spec)}"
             unless @local_only
               begin
-                push_to_remote(spec)
+                podspec_json_tmp_path = create_json_in_path(output_path, spec)
               rescue => e
-                raise Informative, "Error pushing to remote '#{@repo}': #{e.message}"
+                FileUtils.remove(output_path, :force => true)
+                raise Informative, "Error writing spec file in target path '#{output_path}': #{e.message}"
               end
 
               begin
-                create_json_in_path(output_path, spec)
+                push_to_remote(spec, podspec_json_tmp_path)
               rescue => e
-                raise Informative, "Error writing spec file in target path '#{output_path}': #{e.message}"
+                FileUtils.remove(output_path, :force => true)
+                raise Informative, "Error pushing to remote '#{@repo}': #{e.message}"
               end
+              FileUtils.remove(podspec_json_tmp_path, :force => true)
             end
           end
         end
@@ -111,16 +114,16 @@ module Pod
           podspec_json_temp.puts(spec.to_pretty_json)
           podspec_json_temp.close
           curl! '-XPOST', "#{url}/index/modifySpec/#{spec.name}/#{spec.version.to_s}", '-n', '-L', '-H', '"Content-Type:application/json"', '-T', "#{podspec_json_tmp_path}", '-o', podspec_json_path, '--create-dirs'
-          FileUtils.remove(podspec_json_temp, :force => true)
+          podspec_json_tmp_path
         end
 
         # @param  [Specification] spec the spec
         #
-        def push_to_remote(spec)
+        def push_to_remote(spec, podspec_json_tmp_path)
           UI.puts 'Pushing index to Artifactory'
           url = UTIL.get_art_url(repo_root_dir)
           begin
-            curl! '-XPUT', '-n', '-f', '-L', '-H', '"Content-Type:application/json"', "#{url}/index/pushSpec/#{spec.name}/#{spec.version.to_s}", '-d', "'#{spec.to_pretty_json}'"
+            curl! '-XPUT', "#{url}/index/pushSpec/#{spec.name}/#{spec.version.to_s}", '-n', '-f', '-L', '-H', '"Content-Type:application/json"', '-T', "#{podspec_json_tmp_path}"
           rescue => e
             raise Informative, "Error pushing spec to Artifactory: #{e.message}"
           end
