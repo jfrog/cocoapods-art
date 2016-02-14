@@ -42,17 +42,40 @@ end
 # to manage credentials. Why this trivial option is not included in the first place is beyond me.
 #
 module Pod
-    module Downloader
-        class Http
+  module Downloader
+    class Http
+      alias_method :orig_download_file, :download_file
+      alias_method :orig_extract_with_type, :extract_with_type
 
-            alias_method :orig_download_file, :download_file
+      def download_file(full_filename)
+        curl! '-n', '-f', '-L', '-o', full_filename, url, '--create-dirs'
+      end
 
-            def download_file(full_filename)
-                curl! '-n', '-f', '-L', '-o', full_filename, url, '--create-dirs'
-            end
-
+      # Note that we disabled flattening here for the ENTIRE client to deal with
+      # flattening messing up tarballs incoming
+      def extract_with_type(full_filename, type = :zip)
+        unpack_from = full_filename
+        unpack_to = @target_path
+        case type
+          when :zip
+            unzip! unpack_from, '-d', unpack_to
+          when :tgz
+            tar! 'xfz', unpack_from, '-C', unpack_to
+          when :tar
+            tar! 'xf', unpack_from, '-C', unpack_to
+          when :tbz
+            tar! 'xfj', unpack_from, '-C', unpack_to
+          when :txz
+            tar! 'xf', unpack_from, '-C', unpack_to
+          when :dmg
+            extract_dmg(unpack_from, unpack_to)
+          else
+            raise UnsupportedFileTypeError, "Unsupported file type: #{type}"
         end
+      end
+
     end
+  end
 end
 
 # Ugly, ugly hack to override pod's default behavior which is force the master spec repo if
