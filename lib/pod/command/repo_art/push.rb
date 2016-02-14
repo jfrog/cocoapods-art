@@ -60,19 +60,19 @@ module Pod
             spec = Pod::Specification.from_file(spec_file)
             output_path = File.join(repo_specs_dir, spec.name, spec.version.to_s)
             UI.puts " --> #{get_message(output_path, spec)}"
-            begin
-              podspec_json_path = create_json_in_path(output_path, spec)
-            rescue => e
-              raise Informative, "Error writing spec file in target path '#{output_path}': #{e.message}"
-            end
             unless @local_only
               begin
-                push_to_remote(spec, podspec_json_path)
+                push_to_remote(spec)
               rescue => e
                 raise Informative, "Error pushing to remote '#{@repo}': #{e.message}"
               end
-            end
 
+              begin
+                create_json_in_path(output_path, spec)
+              rescue => e
+                raise Informative, "Error writing spec file in target path '#{output_path}': #{e.message}"
+              end
+            end
           end
         end
 
@@ -102,25 +102,25 @@ module Pod
         # @return [String] path where the json was written
         #
         def create_json_in_path(output_path, spec)
+          url = UTIL.get_art_url(repo_root_dir)
           FileUtils.mkdir_p(output_path)
           podspec_json_path = "#{output_path}/#{spec.name}.podspec.json"
+          podspec_json_tmp_path = "#{output_path}/#{spec.name}.podspec.json.tmp"
           FileUtils.remove(podspec_json_path, :force => true)
-          pod_spec_json = File.new(podspec_json_path, "wb")
-          pod_spec_json.puts(spec.to_pretty_json)
-          pod_spec_json.close
-          podspec_json_path
+          podspec_json_temp = File.new(podspec_json_tmp_path, "wb")
+          podspec_json_temp.puts(spec.to_pretty_json)
+          podspec_json_temp.close
+          curl! '-XPOST', "#{url}/index/modifySpec/#{spec.name}/#{spec.version.to_s}", '-n', '-L', '-H', '"Content-Type:application/json"', '-T', "#{podspec_json_tmp_path}", '-o', podspec_json_path, '--create-dirs'
+          FileUtils.remove(podspec_json_temp, :force => true)
         end
-
 
         # @param  [Specification] spec the spec
         #
-        # @param [String] podspec_json_path path to podspec.json file
-        #
-        def push_to_remote(spec, podspec_json_path)
+        def push_to_remote(spec)
           UI.puts 'Pushing index to Artifactory'
           url = UTIL.get_art_url(repo_root_dir)
           begin
-            curl! '-XPUT', '-n', '-f', '-L', '-H', '"Content-Type:application/json"', "#{url}/index/pushSpec/#{spec.name}/#{spec.version.to_s}", '-T', "#{podspec_json_path}"
+            curl! '-XPUT', '-n', '-f', '-L', '-H', '"Content-Type:application/json"', "#{url}/index/pushSpec/#{spec.name}/#{spec.version.to_s}", '-d', "'#{spec.to_pretty_json}'"
           rescue => e
             raise Informative, "Error pushing spec to Artifactory: #{e.message}"
           end
