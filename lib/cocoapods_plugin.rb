@@ -44,33 +44,31 @@ end
 module Pod
   module Downloader
     class Http
+      # Force flattening of index downloads with :indexDownload => true
+      def self.options
+        [:type, :flatten, :sha1, :sha256, :indexDownload]
+      end
+
       alias_method :orig_download_file, :download_file
-      alias_method :orig_extract_with_type, :extract_with_type
+      alias_method :orig_should_flatten?, :should_flatten?
 
       def download_file(full_filename)
         curl! '-n', '-f', '-L', '-o', full_filename, url, '--create-dirs'
       end
 
       # Note that we disabled flattening here for the ENTIRE client to deal with
-      # flattening messing up tarballs incoming
-      def extract_with_type(full_filename, type = :zip)
-        unpack_from = full_filename
-        unpack_to = @target_path
-        case type
-          when :zip
-            unzip! unpack_from, '-d', unpack_to
-          when :tgz
-            tar! 'xfz', unpack_from, '-C', unpack_to
-          when :tar
-            tar! 'xf', unpack_from, '-C', unpack_to
-          when :tbz
-            tar! 'xfj', unpack_from, '-C', unpack_to
-          when :txz
-            tar! 'xf', unpack_from, '-C', unpack_to
-          when :dmg
-            extract_dmg(unpack_from, unpack_to)
-          else
-            raise UnsupportedFileTypeError, "Unsupported file type: #{type}"
+      # default flattening for non zip archives messing up tarballs incoming
+      def should_flatten?
+        # TODO uncomment when Artifactory stops sending the :flatten flag
+        # if options.key?(:flatten)
+        #   true
+        # else
+        #   false
+        # end
+        if options.key?(:indexDownload)
+          true
+        else
+          false
         end
       end
 

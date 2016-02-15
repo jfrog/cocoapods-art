@@ -40,7 +40,7 @@ module Pod
 
             repo_dir_specs = "#{repo_dir_root}/Specs"
             begin
-              downloader = Pod::Downloader::Http.new(repo_dir_specs, "#{@url}/index/fetchIndex", :type => 'tgz')
+              downloader = Pod::Downloader::Http.new(repo_dir_specs, "#{@url}/index/fetchIndex", :type => 'tgz', :indexDownload => true)
               downloader.download
             rescue => e
               FileUtils.remove_entry_secure(repo_dir_root, :force => true)

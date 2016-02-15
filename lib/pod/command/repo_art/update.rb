@@ -76,7 +76,7 @@ module Pod
         # Performs a 'soft' update which appends any changes from the remote without deleting out-of-sync entries
         #
         def soft_update(source, url)
-          downloader = Pod::Downloader::Http.new("#{source.repo}", "#{url}/index/fetchIndex", :type => 'tgz')
+          downloader = Pod::Downloader::Http.new("#{source.repo}", "#{url}/index/fetchIndex", :type => 'tgz', :indexDownload => true)
           downloader.download
           UTIL.cleanup_index_download("#{source.repo}")
           UTIL.del_redundant_spec_dir("#{source.repo}/Specs/Specs")
