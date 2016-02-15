@@ -6,7 +6,17 @@ A CocoaPods Plugin to work with Artifactory Repository
 
 ## Client Configuration
 To add an Artifactory repository named 'myRepo' to your client:
-`pod repo-art add http://art-prod.company.com:8081/artifactory/api/pods/myRepo`
+```
+pod repo-art add http://art-prod.company.com:8081/artifactory/api/pods/myRepo
+```
+
+To use 'myRepo' to resolve pods when installing you must add the following to your Podfile:
+```ruby
+plugin 'cocoapods-art', :sources => [
+        '<local_specs_repo_name>'    
+    ] 
+```
+More than one source can be included, separated by commas.
 
 For authenticated access, please add the user and password to your .netrc file:
 ```
@@ -20,13 +30,14 @@ You can also use an encrypted Artifactory password or your API key
 See the [Artifactory User Guide](https://www.jfrog.com/confluence/display/RTF/CocoaPods+Repositories)
 
 ## The cocoapods-art plugin exposes all `pod repo` commands  by using `pod repo-art`:
-`pod repo-art add`
-`pod repo-art lint`
-`pod repo-art list`
-`pod repo-art push`
-`pod repo-art remove`
-`pod repo-art update`
-
+```
+pod repo-art add
+pod repo-art lint
+pod repo-art list
+pod repo-art push
+pod repo-art remove
+pod repo-art update
+```
 ## Special notes
 Contrary to the default behavior, the cocoapods-art plugin does not implicitly update your sources when actions such as `add` or `push` run.  To update a repo use  `pod repo-art update`
 
