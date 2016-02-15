@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/cocoapods-art.svg)](https://badge.fury.io/rb/cocoapods-art)
+
 # cocoapods-art
 A CocoaPods Plugin to work with Artifactory Repository
 
