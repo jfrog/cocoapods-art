@@ -34,11 +34,11 @@ See the [Artifactory User Guide](https://www.jfrog.com/confluence/display/RTF/Co
 pod repo-art add
 pod repo-art lint
 pod repo-art list
-pod repo-art push
 pod repo-art remove
 pod repo-art update
 ```
 ## Special notes
-Contrary to the default behavior, the cocoapods-art plugin does not implicitly update your sources when actions such as `add` or `push` run.  To update a repo use  `pod repo-art update`
+Contrary to the default behavior, the cocoapods-art plugin does not implicitly update your sources when actions such as `add` run. 
+To update a repo use  `pod repo-art update`
 
 `pod repo-art update` is an accumulative operation, meaning that it does not remove entries which do not exist in the Artifactory backend in order to preserve entries that were created with the `--local-only` flag. To have all such entries removed use the update command with the `--prune` flag.
