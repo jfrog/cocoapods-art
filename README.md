@@ -9,7 +9,7 @@ A CocoaPods Plugin to work with Artifactory Repository
 ## Client Configuration
 To add an Artifactory repository named 'myRepo' to your client:
 ```
-pod repo-art add http://art-prod.company.com:8081/artifactory/api/pods/myRepo
+pod repo-art add artifactory-local http://art-prod.company.com:8081/artifactory/api/pods/myRepo
 ```
 
 To use 'myRepo' to resolve pods when installing you must add the following to your Podfile:
