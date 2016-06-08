@@ -48,7 +48,7 @@ module Pod
         # @return [Source] The list of the Artifactory sources.
         #
         def art_sources
-          SourcesManager.all.select do |source|
+          Pod::Config.instance.sources_manager.all.select do |source|
             UTIL.art_repo?(source.repo)
           end
         end

@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Enables you to use Artifactory as your spec repo, as well as a repository for your pods}
   spec.summary       = %q{Artifactory support for CocoaPods}
   spec.homepage      = 'https://github.com/JFrogDev/cocoapods-art'
-  spec.license       = 'Apache License 2.0'
+  spec.license       = 'Apache-2.0'
 
   spec.files = Dir['lib/**/*.rb']
   spec.files += Dir['[A-Z]*'] + Dir['test/**/*']
