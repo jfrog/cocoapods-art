@@ -68,7 +68,7 @@ module Pod
         if options.key?(:indexDownload)
           true
         else
-          false
+          orig_should_flatten?
         end
       end
 
