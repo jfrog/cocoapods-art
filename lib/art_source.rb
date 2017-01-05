@@ -23,6 +23,5 @@ module Pod
         File.read("#{repo}/.artpodrc") if File.exist?("#{dir}/.artpodrc")
       end
     end
-
   end
 end

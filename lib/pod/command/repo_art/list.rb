@@ -1,4 +1,5 @@
 require 'util/repo_util'
+require 'pod/artifactory_repo'
 
 module Pod
   class Command
@@ -10,7 +11,7 @@ module Pod
         self.summary = 'List Artifactory-backed repos.'
 
         self.description = <<-DESC
-            List the Artifactory repos from the local spec-repos directory at `~/.cocoapods/repos/.`
+            List the Artifactory repos from the local spec-repos directory at `~/.cocoapods/repos-art/.`
         DESC
 
         def self.options
@@ -20,41 +21,29 @@ module Pod
         end
 
         def initialize(argv)
+          init
           @count_only = argv.flag?('count-only')
           super
         end
 
         def run
-          sources = art_sources
-          print_art_sources(sources) unless @count_only
-          print_source_count(sources)
+          repos = UTIL.get_art_repos
+          print_art_repos(repos) unless @count_only
+          print_art_repos_count(repos)
         end
 
-        def print_art_sources(sources)
-          sources.each do |source|
-            UI.title source.name do
-              print_source(source)
+        def print_art_repos(repos)
+          for repo in repos
+            UI.title repo.name do
+              UI.puts "- URL: #{repo.url}"
+              UI.puts "- Path: #{repo.path}"
             end
           end
           UI.puts "\n"
         end
 
-        def print_source(source)
-          UI.puts '- Type: Artifactory'
-          UI.puts "- URL:  #{UTIL.get_art_url(source.repo)}" if UTIL.artpodrc_file_exists(source.repo)
-          UI.puts "- Path: #{source.repo}"
-        end
-
-        # @return [Source] The list of the Artifactory sources.
-        #
-        def art_sources
-          Pod::Config.instance.sources_manager.all.select do |source|
-            UTIL.art_repo?(source.repo)
-          end
-        end
-
-        def print_source_count(sources)
-          number_of_repos = sources.length
+        def print_art_repos_count(repos)
+          number_of_repos = repos.length
           repo_string = number_of_repos != 1 ? 'repos' : 'repo'
           UI.puts "#{number_of_repos} #{repo_string}\n".green
         end

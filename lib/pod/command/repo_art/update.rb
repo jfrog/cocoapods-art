@@ -47,80 +47,57 @@ module Pod
         #
         def update(source_name = nil, show_output = false)
           if source_name
-            sources = [art_source_named(source_name)]
+            sources = [UTIL.get_art_repo(source_name)]
           else
-            sources = art_sources
+            sources = UTIL.get_art_repos()
           end
+
           sources.each do |source|
-            UI.section "Updating spec repo `#{source.name}`" do
-              Dir.chdir(source.repo) do
-                begin
-                  # TODO HEAD to api/updateTime
-                  # TODO unless .lastupdated >= api/updateTime do
-                  # TODO Until we support delta downloads, update is actually add if not currently up tp date
-                  url = UTIL.get_art_url(source.repo)
-                  if @prune
-                    hard_update(source, source_name, url)
-                  else
-                    soft_update(source, url)
-                  end
-                  UI.puts "Successfully updated repo #{source.name}".green if show_output && !config.verbose?
-                rescue => e
-                  UI.warn "Unable to update repo `#{source.name}`: #{e.message}"
-                end
-              end
-            end
+             UI.section "Updating spec repo `#{source.name}`" do
+               Dir.chdir(source.path) do
+                 begin
+                   # TODO HEAD to api/updateTime
+                   # TODO unless .lastupdated >= api/updateTime do
+                   # TODO Until we support delta downloads, update is actually add if not currently up tp date
+                   url = UTIL.get_art_url(source.path)
+                   if @prune
+                     hard_update(source.name, source.path, url)
+                   else
+                     soft_update(source.path, url)
+                   end
+                   UI.puts "Successfully updated repo #{source.name}".green if show_output && !config.verbose?
+                 rescue => e
+                   UI.warn "Unable to update repo `#{source.name}`: #{e.message}"
+                 end
+               end
+             end
           end
         end
 
         # Performs a 'soft' update which appends any changes from the remote without deleting out-of-sync entries
         #
-        def soft_update(source, url)
-          downloader = Pod::Downloader::Http.new("#{source.repo}", "#{url}/index/fetchIndex", :type => 'tgz', :indexDownload => true)
+        def soft_update(path, url)
+          downloader = Pod::Downloader::Http.new("#{path}", "#{url}/index/fetchIndex", :type => 'tgz', :indexDownload => true)
           downloader.download
-          UTIL.cleanup_index_download("#{source.repo}")
-          UTIL.del_redundant_spec_dir("#{source.repo}/Specs/Specs")
+          UTIL.cleanup_index_download("#{path}")
+          UTIL.del_redundant_spec_dir("#{path}/Specs/Specs")
         end
 
         # Performs a 'hard' update which prunes all index entries which are not sync with the remote (override)
         #
-        def hard_update(source, source_name, url)
+        def hard_update(name, path, url)
           begin
-            repo_update_tmp = "#{source.repo}_update_tmp"
-            system("mv", source.repo.to_s, repo_update_tmp)
-            argv = CLAide::ARGV.new([source_name, url, '--silent'])
+            repo_update_tmp = "#{path}_update_tmp"
+            system("mv", path.to_s, repo_update_tmp)
+            argv = CLAide::ARGV.new([name, url, '--silent'])
             Pod::Command::RepoArt::Add.new(argv).run
             FileUtils.remove_entry_secure(repo_update_tmp, :force => true)
           rescue => e
-            FileUtils.remove_entry_secure(source.repo.to_s, :force => true)
-            system("mv", repo_update_tmp, source.repo.to_s)
+            FileUtils.remove_entry_secure(path.to_s, :force => true)
+            system("mv", repo_update_tmp, path.to_s)
             raise Informative, "Error getting the index from Artifactory at: '#{url}' : #{e.message}"
           end
         end
-
-        # @return [Source] The Artifactory source with the given name.
-        #
-        # @param  [String] name The name of the source.
-        #
-        def art_source_named(name)
-          specified_source = Pod::Config.instance.sources_manager.aggregate.sources.find { |s| s.name == name }
-          unless specified_source
-            raise Informative, "Unable to find the repo called `#{name}`."
-          end
-          unless UTIL.art_repo?(specified_source.repo)
-            raise Informative, "Repo `#{name}` is not an Artifactory-backed repo."
-          end
-          specified_source
-        end
-
-        # @return [Source] The list of the Artifactory sources.
-        #
-        def art_sources
-          Pod::Config.instance.sources_manager.all.select do |source|
-            UTIL.art_repo?(source.repo)
-          end
-        end
-
       end
     end
   end

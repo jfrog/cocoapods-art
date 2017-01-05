@@ -4,6 +4,41 @@ module Pod
   class RepoArt
     class RepoUtil
 
+      # @return list of Artifactory repos, read from the ~/.cocoapods/repos-art
+      #
+      def self.get_art_repos
+        repos_art_dir = UTIL.get_repos_art_dir()
+        dirs = Dir.glob "#{repos_art_dir}/*/"
+        repos = []
+        for dir in dirs
+          if UTIL.artpodrc_file_exists(dir)
+            url = UTIL.get_art_url(dir)
+            repos.push ArtifactoryRepo.new(dir, url)
+          end
+        end
+        repos
+      end
+
+      # @return [Source] The Artifactory source with the given name.
+      #
+      # @param  [String] name The name of the source.
+      #
+      def self.get_art_repo(name)
+        #specified_source = Pod::Config.instance.sources_manager.aggregate.sources.find { |s| s.name == name }
+        repos = get_art_repos()
+        art_repo = nil
+        for repo in repos
+          if repo.name == name
+            art_repo = repo
+          end
+        end
+
+        unless art_repo
+          raise Informative, "Unable to find the Artifactory-backed repo called `#{name}`."
+        end
+        art_repo
+      end
+
       # @return whether a source is an Artifactory backed repo.
       #
       # @param  [Pathname] repo_root_path root directory of the repo.
@@ -28,6 +63,12 @@ module Pod
         File.exist?("#{dir}/.artpodrc")
       end
 
+      # @return the full path to the repos-art directory
+      #
+      def self.get_repos_art_dir()
+        "#{Pod::Config.instance.home_dir}/repos-art"
+      end
+
       # Cleans up all of the junk left over from using the Downloader
       #
       def self.cleanup_index_download(tmp_file_dir)
@@ -40,7 +81,6 @@ module Pod
         # The default flattening the Downloader uses for tgz makes this screwy
         Dir.delete(redundant_specs_dir) if (Dir.exist?(redundant_specs_dir) && Dir.glob(redundant_specs_dir + '/' + '*').empty?)
       end
-
     end
   end
 end

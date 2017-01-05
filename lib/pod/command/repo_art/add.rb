@@ -9,8 +9,8 @@ module Pod
         self.summary = 'Add a Specs repo from Artifactory.'
 
         self.description = <<-DESC
-          Retrieves the index from an Artifactory instance at 'URL' to the local spec repos
-          directory at `~/.cocoapods/repos/'NAME'`.
+          Retrieves the index from an Artifactory instance at 'URL' to the local spec repos-art
+          directory at `~/.cocoapods/repos-art/'NAME'`.
         DESC
 
         self.arguments = [
@@ -19,6 +19,7 @@ module Pod
         ]
 
         def initialize(argv)
+          init
           @name, @url = argv.shift_argument, argv.shift_argument
           @silent = argv.flag?('silent', false)
           super
@@ -33,10 +34,11 @@ module Pod
 
         def run
           UI.section("Retrieving index from `#{@url}` into local spec repo `#{@name}`") do
-            config.repos_dir.mkpath
-            repo_dir_root = "#{config.repos_dir}/#{@name}"
+            repo_dir_root = "#{@repos_art_dir}/#{@name}"
             raise Informative, "Path #{repo_dir_root} already exists - remove it first, "\
             "or run 'pod repo-art update #{@name}' to update it" if File.exist?(repo_dir_root) && !@silent
+
+            FileUtils::mkdir_p repo_dir_root
 
             repo_dir_specs = "#{repo_dir_root}/Specs"
             begin

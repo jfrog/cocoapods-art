@@ -10,6 +10,8 @@ module Pod
       require 'pod/command/repo_art/update'
       require 'pod/command/repo_art/list'
 
+      UTIL = Pod::RepoArt::RepoUtil
+
       self.abstract_command = true
       self.version = CocoaPodsArt::VERSION
       self.description = 'Enables working with JFrog Artifactory as a Specs repo and as a repository for Pods.'\
@@ -20,6 +22,9 @@ module Pod
 
       self.default_subcommand = 'list'
 
+      def init
+        @repos_art_dir = UTIL.get_repos_art_dir()
+      end
     end
   end
 end
