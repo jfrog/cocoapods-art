@@ -34,6 +34,12 @@ module Pod
 
         def run
           UI.section("Retrieving index from `#{@url}` into local spec repo `#{@name}`") do
+            # Check if a repo with the same name under repos/ already exists
+            repos_path = "#{Pod::Config.instance.home_dir}/repos"
+            raise Informative, "Path repos_path/#{@name} already exists - remove it first, "\
+            "or run 'pod repo-art update #{@name}' to update it" if File.exist?("#{repos_path}/#{@name}") && !@silent
+
+            # Check if a repo with the same name under repo-art/ already exists
             repo_dir_root = "#{@repos_art_dir}/#{@name}"
             raise Informative, "Path #{repo_dir_root} already exists - remove it first, "\
             "or run 'pod repo-art update #{@name}' to update it" if File.exist?(repo_dir_root) && !@silent
@@ -62,6 +68,11 @@ module Pod
               raise Informative, "Cannot create file '#{artpodrc_path}' because : #{e.message}."\
                                   '- your Artifactory-backed Specs repo will not work correctly without it!'
             end
+            # Create a local git repository in the newly added Artifactory local repo
+            system "cd '#{repo_dir_root}' && git init && git add . && git commit -m 'Artifactory repo init'"
+
+            # Create local repo under repos/ which is a remote for the new local git repository
+            system "cd '#{repos_path}' && git clone file://#{repo_dir_root}"
           end
           UI.puts "Successfully added repo #{@name}".green unless @silent
         end

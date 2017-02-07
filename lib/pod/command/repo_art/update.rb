@@ -61,7 +61,7 @@ module Pod
                    # TODO Until we support delta downloads, update is actually add if not currently up tp date
                    url = UTIL.get_art_url(source.path)
                    if @prune
-                     hard_update(source.name, source.path, url)
+                   hard_update(source.name, source.path, url)
                    else
                      soft_update(source.path, url)
                    end
@@ -81,20 +81,32 @@ module Pod
           downloader.download
           UTIL.cleanup_index_download("#{path}")
           UTIL.del_redundant_spec_dir("#{path}/Specs/Specs")
+          system "cd '#{path}' && git add . && git commit -m 'Artifactory repo update specs'"
         end
 
         # Performs a 'hard' update which prunes all index entries which are not sync with the remote (override)
         #
         def hard_update(name, path, url)
+          UI.puts path
           begin
-            repo_update_tmp = "#{path}_update_tmp"
-            system("mv", path.to_s, repo_update_tmp)
+            repos_path = "#{Pod::Config.instance.home_dir}/repos/#{name}"
+            repos_art_path = "#{Pod::Config.instance.home_dir}/repos-art/#{name}"
+
+            repo_update_tmp = "#{repos_path}_update_tmp"
+            repo_art_update_tmp = "#{repos_art_path}_update_tmp"
+
+            system("mv", repos_path.to_s, repo_update_tmp)
+            system("mv", repos_art_path.to_s, repo_art_update_tmp)
+
             argv = CLAide::ARGV.new([name, url, '--silent'])
             Pod::Command::RepoArt::Add.new(argv).run
+
             FileUtils.remove_entry_secure(repo_update_tmp, :force => true)
+            FileUtils.remove_entry_secure(repo_art_update_tmp, :force => true)
           rescue => e
             FileUtils.remove_entry_secure(path.to_s, :force => true)
-            system("mv", repo_update_tmp, path.to_s)
+            system("mv", repo_update_tmp, repos_path.to_s)
+            system("mv", repo_art_update_tmp, repos_art_path.to_s)
             raise Informative, "Error getting the index from Artifactory at: '#{url}' : #{e.message}"
           end
         end
