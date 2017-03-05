@@ -5,6 +5,15 @@ require 'cocoapods_art'
 
 UTIL = Pod::RepoArt::RepoUtil
 
+Pod::HooksManager.register('cocoapods-art', :source_provider) do |context, options|
+  Pod::UI.message 'cocoapods-art received source_provider hook'
+  return unless (sources = options['sources'])
+  sources.each do |source_name|
+    source = create_source_from_name(source_name)
+    context.add_source(source)
+  end
+end
+
 # @param source_name => name of source incoming from the Podfile configuration
 #
 # @return [ArtSource] source of the local spec repo which corresponds to to the given name
