@@ -51,7 +51,7 @@ module Pod
       alias_method :orig_should_flatten?, :should_flatten?
 
       def download_file(full_filename)
-        curl! '-n', '-f', '-L', '-o', full_filename, url, '--create-dirs'
+        curl! '-f', '-L', '-o', full_filename, url, '--create-dirs', '--netrc-optional'
       end
 
       # Note that we disabled flattening here for the ENTIRE client to deal with
