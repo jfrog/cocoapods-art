@@ -15,8 +15,8 @@ pod repo-art add artifactory-local http://art-prod.company.com:8081/artifactory/
 To use 'myRepo' to resolve pods when installing you must add the following to your Podfile:
 ```ruby
 plugin 'cocoapods-art', :sources => [
-        '<local_specs_repo_name>'    
-    ] 
+  '<local_specs_repo_name>'    
+] 
 ```
 More than one source can be included, separated by commas.
 
@@ -27,6 +27,11 @@ login admin
 password password
 ```
 You can also use an encrypted Artifactory password or your API key
+
+If your .netrc file is not located in your home directory, you can specify its location in the environmental variable:
+```
+export COCOAPODS_ART_NETRC_PATH=$HOME/myproject/.netrc
+```
 
 ## Artifactory Configuration
 See the [Artifactory User Guide](https://www.jfrog.com/confluence/display/RTF/CocoaPods+Repositories)
