@@ -103,4 +103,33 @@ module Pod
           end
         end
     end
-  end
+end
+
+module Pod
+    class Source
+        class Manager
+
+          alias_method :orig_source_from_path, :source_from_path
+          
+          # @return [Source] The Source at a given path.
+          #
+          # @param [Pathname] path
+          #        The local file path to one podspec repo.
+          #
+          def source_from_path(path)
+            @sources_by_path ||= Hash.new do |hash, key|
+              art_repo = "#{UTIL.get_repos_art_dir()}/#{key.basename}"
+              hash[key] = if key.basename.to_s == Pod::MasterSource::MASTER_REPO_NAME
+                            MasterSource.new(key)
+                          elsif File.exist?("#{art_repo}/.artpodrc")
+                            create_source_from_name(key.basename)
+                          else
+                            Source.new(key)
+                          end
+            end
+            @sources_by_path[path]
+          end
+
+        end
+    end
+end
