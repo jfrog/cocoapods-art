@@ -54,9 +54,8 @@ module Pod
 
         curl_options = ["-f", "-L", "-o", full_filename, url, "--create-dirs", "--netrc-optional"]
 
-        ssl_cert = ["--cert", `git config --global http.sslcert`.gsub("\n", "")]
-        ssl_key = ["--key", `git config --global http.sslkey`.gsub("\n", "")]
-        curl_options.concat([ssl_cert, ssl_key])
+        ssl_conf = ["--cert", `git config --global http.sslcert`.gsub("\n", ""), "--key", `git config --global http.sslkey`.gsub("\n", "")]
+        curl_options.concat(ssl_conf) if !ssl_conf.any?(&:blank?)
 
         netrc_path = ENV["COCOAPODS_ART_NETRC_PATH"]
         curl_options.concat(["--netrc-file", Pathname.new(netrc_path).expand_path]) if netrc_path
