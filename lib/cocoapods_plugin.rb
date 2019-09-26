@@ -119,8 +119,8 @@ module Pod
           def source_from_path(path)
             @sources_by_path ||= Hash.new do |hash, key|
               art_repo = "#{UTIL.get_repos_art_dir()}/#{key.basename}"
-              hash[key] = if key.basename.to_s == Pod::MasterSource::MASTER_REPO_NAME
-                            MasterSource.new(key)
+              hash[key] = if key.basename.to_s == Pod::TrunkSource::TRUNK_REPO_NAME
+                            TrunkSource.new(key)
                           elsif File.exist?("#{art_repo}/.artpodrc")
                             create_source_from_name(key.basename)
                           else
