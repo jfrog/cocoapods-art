@@ -36,7 +36,7 @@ module Pod
           UI.section("Retrieving index from `#{@url}` into local spec repo `#{@name}`") do
             # Check if a repo with the same name under repos/ already exists
             repos_path = "#{Pod::Config.instance.home_dir}/repos"
-            raise Informative, "Path repos_path/#{@name} already exists - remove it first, "\
+            raise Informative, "Path #{repos_path}/#{@name} already exists - remove it first, "\
             "or run 'pod repo-art update #{@name}' to update it" if File.exist?("#{repos_path}/#{@name}") && !@silent
 
             # Check if a repo with the same name under repo-art/ already exists
