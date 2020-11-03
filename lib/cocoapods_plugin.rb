@@ -44,23 +44,29 @@ module Pod
     class Http
       # Force flattening of index downloads with :indexDownload => true
       def self.options
-        [:type, :flatten, :sha1, :sha256, :indexDownload]
+        [:type, :flatten, :sha1, :sha256, :indexDownload, :headers]
       end
 
       alias_method :orig_download_file, :download_file
       alias_method :orig_should_flatten?, :should_flatten?
 
       def download_file(full_filename)
-
-        curl_options = ["-f", "-L", "-o", full_filename, url, "--create-dirs", "--netrc-optional"]
+        parameters = ["-f", "-L", "-o", full_filename, url, "--create-dirs", "--netrc-optional", '--retry', '2']
+        parameters << user_agent_argument if headers.nil? ||
+            headers.none? { |header| header.casecmp(USER_AGENT_HEADER).zero? }
 
         ssl_conf = ["--cert", `git config --global http.sslcert`.gsub("\n", ""), "--key", `git config --global http.sslkey`.gsub("\n", "")]
-        curl_options.concat(ssl_conf) if !ssl_conf.any?(&:blank?)
+        parameters.concat(ssl_conf) if !ssl_conf.any?(&:blank?)
 
         netrc_path = ENV["COCOAPODS_ART_NETRC_PATH"]
-        curl_options.concat(["--netrc-file", Pathname.new(netrc_path).expand_path]) if netrc_path
+        parameters.concat(["--netrc-file", Pathname.new(netrc_path).expand_path]) if netrc_path
 
-        curl! curl_options
+        headers.each do |h|
+          parameters << '-H'
+          parameters << h
+        end unless headers.nil?
+
+        curl! parameters
       end
 
       # Note that we disabled flattening here for the ENTIRE client to deal with
@@ -114,7 +120,7 @@ module Pod
         class Manager
 
           alias_method :orig_source_from_path, :source_from_path
-          
+
           # @return [Source] The Source at a given path.
           #
           # @param [Pathname] path
