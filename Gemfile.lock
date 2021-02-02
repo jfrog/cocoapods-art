@@ -67,7 +67,7 @@ GEM
     nanaimo (0.2.6)
     nap (1.1.0)
     netrc (0.11.0)
-    rake (0.9.6)
+    rake (13.0.3)
     ruby-macho (1.4.0)
     thread_safe (0.3.6)
     tzinfo (1.2.5)
@@ -89,7 +89,7 @@ DEPENDENCIES
   cocoapods-art!
   cocoapods-core
   cocoapods-downloader
-  rake (~> 0)
+  rake (~> 13)
 
 BUNDLED WITH
    2.0.2
