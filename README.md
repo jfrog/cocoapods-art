@@ -33,6 +33,14 @@ If your .netrc file is not located in your home directory, you can specify its l
 export COCOAPODS_ART_NETRC_PATH=$HOME/myproject/.netrc
 ```
 
+Alternatively, you can specify a username and password/API key directly from an environment variable rather than utilizing the .netrc file, by setting the value of `COCOAPODS_ART_CREDENTIALS` to your Artifactory username and the password separated by a colon:
+
+```
+export COCOAPODS_ART_CREDENTIALS="admin:password"
+````
+
+If the `COCOAPODS_ART_CREDENTIALS` variable is set, its value will supercede any credentials specified in your .netrc file, causing them to be ignored.
+
 ## Artifactory Configuration
 See the [Artifactory User Guide](https://www.jfrog.com/confluence/display/RTF/CocoaPods+Repositories)
 
