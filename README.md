@@ -39,7 +39,7 @@ Alternatively, you can specify a username and password/API key directly from an 
 export COCOAPODS_ART_CREDENTIALS="admin:password"
 ````
 
-If the `COCOAPODS_ART_CREDENTIALS` variable is set, its value will supercede any credentials specified in your .netrc file, causing them to be ignored.
+If the `COCOAPODS_ART_CREDENTIALS` variable is set, its value will supersede any credentials specified in your .netrc file, causing them to be ignored.
 
 ## Artifactory Configuration
 See the [Artifactory User Guide](https://www.jfrog.com/confluence/display/RTF/CocoaPods+Repositories)
