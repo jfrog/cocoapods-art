@@ -33,10 +33,10 @@ If your .netrc file is not located in your home directory, you can specify its l
 export COCOAPODS_ART_NETRC_PATH=$HOME/myproject/.netrc
 ```
 
-You could set the following environment variable: COCOAPODS_ART_SSL_NO_REOVKE, this will add the flag --ssl-no-revoke to curl command.
+You could set the following environment variable: COCOAPODS_ART_SSL_NO_REVOKE, this will add the flag --ssl-no-revoke to curl command.
 If your are running on an environment where access to CRL isn't available you would still be able to access Artifactory via HTTPS using the cocoapods-art plugin on windows.
 ```
-set COCOAPODS_ART_SSL_NO_REOVKE=true
+set COCOAPODS_ART_SSL_NO_REVOKE=true
 ```
 
 ## Artifactory Configuration
