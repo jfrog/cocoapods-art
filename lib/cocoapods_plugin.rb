@@ -61,6 +61,9 @@ module Pod
         netrc_path = ENV["COCOAPODS_ART_NETRC_PATH"]
         parameters.concat(["--netrc-file", Pathname.new(netrc_path).expand_path]) if netrc_path
 
+        art_credentials = ENV["COCOAPODS_ART_CREDENTIALS"]
+        parameters.concat(["--user", art_credentials]) if art_credentials
+	
         winssl_no_revoke = ENV["COCOAPODS_ART_SSL_NO_REVOKE"]
         parameters.concat(["--ssl-no-revoke"]) if defined? winssl_no_revoke && "true".casecmp(winssl_no_revoke)
 

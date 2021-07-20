@@ -33,6 +33,14 @@ If your .netrc file is not located in your home directory, you can specify its l
 export COCOAPODS_ART_NETRC_PATH=$HOME/myproject/.netrc
 ```
 
+Alternatively, you can specify a username and password/API key directly from an environment variable rather than utilizing the .netrc file, by setting the value of `COCOAPODS_ART_CREDENTIALS` to your Artifactory username and the password separated by a colon:
+
+```
+export COCOAPODS_ART_CREDENTIALS="admin:password"
+````
+
+If the `COCOAPODS_ART_CREDENTIALS` variable is set, its value will supersede any credentials specified in your .netrc file, causing them to be ignored.
+
 You could set the following environment variable: COCOAPODS_ART_SSL_NO_REVOKE, this will add the flag --ssl-no-revoke to curl command.
 If your are running on an environment where access to CRL isn't available you would still be able to access Artifactory via HTTPS using the cocoapods-art plugin on windows.
 ```
