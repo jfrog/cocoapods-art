@@ -63,6 +63,9 @@ module Pod
 
         art_credentials = ENV["COCOAPODS_ART_CREDENTIALS"]
         parameters.concat(["--user", art_credentials]) if art_credentials
+	
+        winssl_no_revoke = ENV["COCOAPODS_ART_SSL_NO_REVOKE"]
+        parameters.concat(["--ssl-no-revoke"]) if defined? winssl_no_revoke && "true".casecmp(winssl_no_revoke)
 
         headers.each do |h|
           parameters << '-H'
@@ -132,9 +135,12 @@ module Pod
           def source_from_path(path)
             @sources_by_path ||= Hash.new do |hash, key|
               art_repo = "#{UTIL.get_repos_art_dir()}/#{key.basename}"
-              hash[key] = if key.basename.to_s == Pod::TrunkSource::TRUNK_REPO_NAME
+              hash[key] = case
+                          when key.basename.to_s == Pod::TrunkSource::TRUNK_REPO_NAME
                             TrunkSource.new(key)
-                          elsif File.exist?("#{art_repo}/.artpodrc")
+                          when (key + '.url').exist?
+                            CDNSource.new(key)
+                          when File.exist?("#{art_repo}/.artpodrc")
                             create_source_from_name(key.basename)
                           else
                             Source.new(key)

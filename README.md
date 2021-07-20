@@ -41,6 +41,12 @@ export COCOAPODS_ART_CREDENTIALS="admin:password"
 
 If the `COCOAPODS_ART_CREDENTIALS` variable is set, its value will supersede any credentials specified in your .netrc file, causing them to be ignored.
 
+You could set the following environment variable: COCOAPODS_ART_SSL_NO_REVOKE, this will add the flag --ssl-no-revoke to curl command.
+If your are running on an environment where access to CRL isn't available you would still be able to access Artifactory via HTTPS using the cocoapods-art plugin on windows.
+```
+set COCOAPODS_ART_SSL_NO_REVOKE=true
+```
+
 ## Artifactory Configuration
 See the [Artifactory User Guide](https://www.jfrog.com/confluence/display/RTF/CocoaPods+Repositories)
 
